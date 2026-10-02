@@ -1,0 +1,19 @@
+name: fuchojuana-development
+services:
+  db:
+    image: postgres:18-bookworm
+    ports:
+      - "127.0.0.1:55432:5432"
+    environment:
+      POSTGRES_USER: fucho_dev
+      POSTGRES_DB: fuchojuana_dev
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?required}
+    volumes:
+      - postgres_development:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fucho_dev -d fuchojuana_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+volumes:
+  postgres_development:

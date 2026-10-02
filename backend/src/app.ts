@@ -1,0 +1,21 @@
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import { env } from "./config/env.js";
+import { db } from "./config/db.js";
+import { authRouter } from "./routes/auth.js";
+import { apiRouter } from "./routes/api.js";
+import { errors } from "./middleware/errors.js";
+export const app = express();
+app.set("trust proxy", env.TRUST_PROXY);
+app.use(helmet());
+app.use(cors({ origin: env.FRONTEND_ORIGIN.split(",") }));
+app.use(express.json({ limit: "100kb" }));
+app.get("/api/health", async (req, res) => {
+  await db.$queryRaw`SELECT 1`;
+  res.json({ status: "ok", database: "postgresql", environment: env.NODE_ENV });
+});
+app.use("/api/auth", authRouter);
+app.use("/api", apiRouter);
+app.use((req, res) => res.status(404).json({ error: "Ruta no encontrada" }));
+app.use(errors);

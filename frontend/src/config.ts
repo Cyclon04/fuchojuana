@@ -1,0 +1,133 @@
+import type { Config, Resource } from "./types";
+export const configs: Record<Resource, Config> = {
+  players: {
+    title: "Jugadores",
+    singular: "jugador",
+    eyebrow: "EL TALENTO DE LA FRONTERA",
+    description: "Cada jugador, su historia y su lugar en la cancha.",
+    icon: "users",
+    fields: [
+      { key: "name", label: "Nombre completo" },
+      { key: "birthDate", label: "Nacimiento (AAAA-MM-DD)", type: "date" },
+      {
+        key: "position",
+        label: "Posición",
+        type: "select",
+        options: ["Portero", "Defensa", "Medio", "Delantero"].map((v) => ({
+          value: v,
+          label: v,
+        })),
+      },
+      {
+        key: "jerseyNumber",
+        label: "Número de camiseta",
+        type: "number",
+        optional: true,
+      },
+      {
+        key: "userId",
+        label: "Cuenta de jugador",
+        type: "select",
+        source: "users",
+        optional: true,
+      },
+    ],
+  },
+  clubs: {
+    title: "Clubes",
+    singular: "club",
+    eyebrow: "NUESTRAS RAÍCES",
+    description: "Los clubes que hacen crecer el fútbol en Tijuana.",
+    icon: "shield",
+    fields: [
+      { key: "name", label: "Nombre del club" },
+      { key: "neighborhood", label: "Colonia / zona" },
+      { key: "description", label: "Descripción", optional: true },
+    ],
+  },
+  teams: {
+    title: "Equipos",
+    singular: "equipo",
+    eyebrow: "JUNTOS EN LA CANCHA",
+    description: "Organiza tus equipos, entrenadores y plantillas.",
+    icon: "flag",
+    fields: [
+      { key: "name", label: "Nombre del equipo" },
+      { key: "category", label: "Categoría" },
+      { key: "clubId", label: "Club", type: "select", source: "clubs" },
+      {
+        key: "coachId",
+        label: "Entrenador",
+        type: "select",
+        source: "coaches",
+      },
+    ],
+  },
+  tournaments: {
+    title: "Torneos",
+    singular: "torneo",
+    eyebrow: "LA COMPETENCIA NOS UNE",
+    description: "Gestiona las competencias y sus equipos participantes.",
+    icon: "award",
+    fields: [
+      { key: "name", label: "Nombre del torneo" },
+      { key: "location", label: "Sede / ubicación" },
+      { key: "category", label: "Categoría" },
+      { key: "startDate", label: "Inicio (AAAA-MM-DD)", type: "date" },
+      { key: "endDate", label: "Fin (AAAA-MM-DD)", type: "date" },
+    ],
+  },
+  matches: {
+    title: "Partidos",
+    singular: "partido",
+    eyebrow: "CADA JORNADA CUENTA",
+    description: "Calendario, sedes y resultados en un solo lugar.",
+    icon: "calendar",
+    fields: [
+      {
+        key: "tournamentId",
+        label: "Torneo",
+        type: "select",
+        source: "tournaments",
+      },
+      {
+        key: "homeTeamId",
+        label: "Equipo local",
+        type: "select",
+        source: "teams",
+      },
+      {
+        key: "awayTeamId",
+        label: "Equipo visitante",
+        type: "select",
+        source: "teams",
+      },
+      {
+        key: "kickoff",
+        label: "Fecha y hora de Tijuana (AAAA-MM-DD HH:mm)",
+        type: "datetime",
+      },
+      { key: "location", label: "Cancha / ubicación" },
+      {
+        key: "homeScore",
+        label: "Goles local",
+        type: "number",
+        optional: true,
+      },
+      {
+        key: "awayScore",
+        label: "Goles visitante",
+        type: "number",
+        optional: true,
+      },
+    ],
+  },
+  users: {
+    title: "Usuarios",
+    singular: "usuario",
+    eyebrow: "ADMINISTRACIÓN",
+    description: "Asigna permisos a las cuentas registradas.",
+    icon: "settings",
+    fields: [],
+  },
+};

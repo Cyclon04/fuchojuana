@@ -1,0 +1,10 @@
+{
+  "expo": {
+    "name": "Fuchojuana",
+    "slug": "fuchojuana",
+    "version": "1.0.0",
+    "orientation": "default",
+    "userInterfaceStyle": "light",
+    "web": { "bundler": "metro", "output": "single", "name": "Fuchojuana" }
+  }
+}

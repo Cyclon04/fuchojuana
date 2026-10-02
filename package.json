@@ -1,0 +1,28 @@
+{
+  "name": "fuchojuana",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev:api": "node scripts/env.mjs npm run dev -w backend",
+    "dev:web": "node scripts/env.mjs npm run web -w frontend",
+    "build": "npm run build -w backend && npm run build -w frontend",
+    "typecheck": "npm run typecheck -w backend && npm run typecheck -w frontend",
+    "test": "ENV_FILE=.env.test node scripts/env.mjs npm test -w backend",
+    "db:generate": "prisma generate --schema database/prisma/schema.prisma",
+    "db:migrate": "node scripts/env.mjs prisma migrate deploy --schema database/prisma/schema.prisma",
+    "db:seed": "node scripts/env.mjs tsx database/seed.ts",
+    "db:studio": "node scripts/env.mjs prisma studio --schema database/prisma/schema.prisma"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.9",
+    "prisma": "6.19.0",
+    "tsx": "^4.20.0",
+    "typescript": "~5.9.2"
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.0"
+  }
+}

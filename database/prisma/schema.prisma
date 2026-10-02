@@ -1,0 +1,131 @@
+generator client {
+ provider = "prisma-client-js"
+}
+datasource db {
+ provider = "postgresql"
+ url = env("DATABASE_URL")
+}
+enum Role {
+ ADMIN
+ COACH
+ PLAYER
+}
+model User {
+ id String @id @default(uuid()) @db.Uuid
+ name String
+ email String @unique
+ passwordHash String
+ role Role @default(PLAYER)
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ player Player?
+ teams Team[]
+ sessions Session[]
+ @@map("users")
+}
+model Session {
+ id String @id @default(uuid()) @db.Uuid
+ userId String @db.Uuid
+ user User @relation(fields:[userId], references:[id], onDelete:Cascade)
+ expiresAt DateTime
+ createdAt DateTime @default(now())
+ @@index([userId])
+ @@map("sessions")
+}
+model Player {
+ id String @id @default(uuid()) @db.Uuid
+ name String
+ birthDate DateTime @db.Date
+ position String
+ jerseyNumber Int?
+ userId String? @unique @db.Uuid
+ user User? @relation(fields:[userId], references:[id], onDelete:SetNull)
+ memberships TeamPlayer[]
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@map("players")
+}
+model Club {
+ id String @id @default(uuid()) @db.Uuid
+ name String @unique
+ neighborhood String
+ description String @default("")
+ teams Team[]
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@map("clubs")
+}
+model Team {
+ id String @id @default(uuid()) @db.Uuid
+ name String @unique
+ category String
+ clubId String @db.Uuid
+ coachId String @db.Uuid
+ club Club @relation(fields:[clubId],references:[id],onDelete:NoAction)
+ coach User @relation(fields:[coachId],references:[id],onDelete:NoAction)
+ players TeamPlayer[]
+ tournaments TournamentTeam[]
+ homeMatches Match[] @relation("HomeTeam")
+ awayMatches Match[] @relation("AwayTeam")
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([clubId])
+ @@index([coachId])
+ @@map("teams")
+}
+model TeamPlayer {
+ teamId String @db.Uuid
+ playerId String @db.Uuid
+ team Team @relation(fields:[teamId],references:[id],onDelete:Cascade)
+ player Player @relation(fields:[playerId],references:[id],onDelete:Cascade)
+ createdAt DateTime @default(now())
+ @@id([teamId,playerId])
+ @@index([playerId])
+ @@map("team_players")
+}
+model Tournament {
+ id String @id @default(uuid()) @db.Uuid
+ name String
+ location String
+ category String
+ startDate DateTime @db.Date
+ endDate DateTime @db.Date
+ teams TournamentTeam[]
+ matches Match[]
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@map("tournaments")
+}
+model TournamentTeam {
+ tournamentId String @db.Uuid
+ teamId String @db.Uuid
+ tournament Tournament @relation(fields:[tournamentId],references:[id],onDelete:Cascade)
+ team Team @relation(fields:[teamId],references:[id],onDelete:NoAction)
+ createdAt DateTime @default(now())
+ homeMatches Match[] @relation("HomeEntry")
+ awayMatches Match[] @relation("AwayEntry")
+ @@id([tournamentId,teamId])
+ @@index([teamId])
+ @@map("tournament_teams")
+}
+model Match {
+ id String @id @default(uuid()) @db.Uuid
+ tournamentId String @db.Uuid
+ homeTeamId String @db.Uuid
+ awayTeamId String @db.Uuid
+ tournament Tournament @relation(fields:[tournamentId],references:[id],onDelete:NoAction)
+ homeTeam Team @relation("HomeTeam",fields:[homeTeamId],references:[id],onDelete:NoAction)
+ awayTeam Team @relation("AwayTeam",fields:[awayTeamId],references:[id],onDelete:NoAction)
+ homeEntry TournamentTeam @relation("HomeEntry",fields:[tournamentId,homeTeamId],references:[tournamentId,teamId],onDelete:NoAction)
+ awayEntry TournamentTeam @relation("AwayEntry",fields:[tournamentId,awayTeamId],references:[tournamentId,teamId],onDelete:NoAction)
+ kickoff DateTime
+ location String
+ homeScore Int?
+ awayScore Int?
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([tournamentId,kickoff])
+ @@index([homeTeamId])
+ @@index([awayTeamId])
+ @@map("matches")
+}
